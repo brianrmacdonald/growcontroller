@@ -96,7 +96,14 @@ o3.long_day_minutes = 840
 o3.short_day_minutes = 600
 o3.longest_day = 170
 
-outlets = [o1, o2, o3]  # allows them to be iterated over
+o4 = onOffController()
+o4.label_text = 'Manual Only'
+o4.grid_row = 9
+o4.gpioPinNum = 17
+o4.run_times = [0, 0, 0, 0, 0, 0, 0]
+o4.start_time = '0:00'
+
+outlets = [o1, o2, o3, o4]  # allows them to be iterated over
 
 # GUI Setup
 # some initializations
@@ -114,6 +121,7 @@ gp.setmode(gp.BCM)
 gp.setup(o1.gpioPinNum, gp.OUT)
 gp.setup(o2.gpioPinNum, gp.OUT)
 gp.setup(o3.gpioPinNum, gp.OUT)
+gp.setup(o4.gpioPinNum, gp.OUT)
 
 cur_date = tk.StringVar()
 cur_time = tk.StringVar()
@@ -154,6 +162,7 @@ for o in range(len(outlets)):
 # button to toggle manual on/off
 b1 =tk.Button(root, text='Manual', command=lambda:toggleManualRun(o1)).grid(row=o1.grid_row, column=col_nums['button'], sticky=tk.W, padx=x_pad, pady=y_pad)
 b2 =tk.Button(root, text='Manual', command=lambda:toggleManualRun(o2)).grid(row=o2.grid_row, column=col_nums['button'], sticky=tk.W, padx=x_pad, pady=y_pad)
+b4 =tk.Button(root, text='Manual', command=lambda:toggleManualRun(o4)).grid(row=o4.grid_row, column=col_nums['button'], sticky=tk.W, padx=x_pad, pady=y_pad)
 
 while True:
     tm.sleep(1)
@@ -164,15 +173,15 @@ while True:
     for o in range(len(outlets)):
         if outlets[o].manualRun == True:
             lights[o].config(image = green_light_man)
-            gp.output(outlets[o].gpioPinNum, gp.LOW)
+            gp.output(outlets[o].gpioPinNum, gp.HIGH)
             
         elif outlets[o].status() == 1:
             lights[o].config(image = green_light)
-            gp.output(outlets[o].gpioPinNum, gp.LOW)
+            gp.output(outlets[o].gpioPinNum, gp.HIGH)
             
         else:
             lights[o].config(image = red_light)
-            gp.output(outlets[o].gpioPinNum, gp.HIGH)
+            gp.output(outlets[o].gpioPinNum, gp.LOW)
 
         rmins[o].config(text=int(outlets[o].run_minutes()))
         st_times[o].config(text=outlets[o].start_time)
